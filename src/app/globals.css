@@ -1,26 +1,286 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   Colour. One hue family (green), built in OKLCH.
+   Highlights lean yellow-green, shadows lean blue-green, the way a
+   painter shifts a single pigment. Every pairing used for text has
+   been checked against WCAG AA.
+   ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light dark;
+
+  /* The raw scale. Used for fills, gradients and the scroll-linked
+     colour changes in later steps. */
+  --leaf-50: oklch(0.97 0.03 135);
+  --leaf-100: oklch(0.93 0.06 138);
+  --leaf-200: oklch(0.88 0.11 142);
+  --leaf-300: oklch(0.82 0.17 146);
+  --leaf-400: oklch(0.75 0.2 150);
+  --leaf-500: oklch(0.66 0.19 153);
+  --leaf-600: oklch(0.54 0.15 156);
+  --leaf-700: oklch(0.42 0.11 159);
+  --leaf-800: oklch(0.32 0.08 162);
+  --leaf-900: oklch(0.25 0.055 164);
+  --leaf-950: oklch(0.19 0.04 166);
+
+  /* Semantic tokens: light (field paper) first, dark (bottle) second. */
+  --ground: light-dark(oklch(0.958 0.024 128), oklch(0.27 0.06 163));
+  --raised: light-dark(oklch(0.925 0.04 135), oklch(0.32 0.065 162));
+  --ink: light-dark(oklch(0.215 0.05 164), oklch(0.955 0.03 140));
+  --muted: light-dark(oklch(0.44 0.07 160), oklch(0.8 0.06 150));
+  --rule: light-dark(oklch(0.3 0.06 162), oklch(0.56 0.1 158));
+  /* Green for text, links and focus rings on the ground. */
+  --verde: light-dark(oklch(0.46 0.14 156), oklch(0.83 0.19 150));
+  /* Vivid green for filled blocks. Always paired with --on-signal. */
+  --signal: light-dark(oklch(0.82 0.2 148), oklch(0.84 0.2 148));
+  --on-signal: oklch(0.2 0.045 165);
+  /* Reserved for corrupt data. Never place it on --signal. */
+  --fault: light-dark(oklch(0.55 0.2 38), oklch(0.74 0.18 45));
+
+  /* Survey grid line. Lighter on paper than on bottle green. */
+  --grid: light-dark(
+    color-mix(in oklab, var(--rule) 12%, transparent),
+    color-mix(in oklab, var(--rule) 24%, transparent)
+  );
+
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --header-h: 48px;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display:
+    var(--font-archivo), "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-text: var(--font-newsreader), Georgia, "Times New Roman", serif;
+
+  --color-ground: var(--ground);
+  --color-raised: var(--raised);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-verde: var(--verde);
+  --color-signal: var(--signal);
+  --color-on-signal: var(--on-signal);
+  --color-fault: var(--fault);
+
+  --color-leaf-50: var(--leaf-50);
+  --color-leaf-100: var(--leaf-100);
+  --color-leaf-200: var(--leaf-200);
+  --color-leaf-300: var(--leaf-300);
+  --color-leaf-400: var(--leaf-400);
+  --color-leaf-500: var(--leaf-500);
+  --color-leaf-600: var(--leaf-600);
+  --color-leaf-700: var(--leaf-700);
+  --color-leaf-800: var(--leaf-800);
+  --color-leaf-900: var(--leaf-900);
+  --color-leaf-950: var(--leaf-950);
+
+  --spacing-gutter: var(--gutter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+html {
+  background: var(--ground);
+  scrollbar-color: var(--verde) var(--ground);
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--on-signal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--verde);
+  outline-offset: 3px;
+}
+
+/* On a green block the green ring disappears, so switch to ink. */
+.on-signal :focus-visible {
+  outline-color: var(--on-signal);
+}
+
+@layer components {
+  /* Section headings in the same condensed black as the figures. */
+  .headline {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 900;
+    letter-spacing: -0.015em;
+    line-height: 0.85;
+  }
+
+  /* The giant figures. Condensed, black weight, tabular so digits
+     keep their width while they change in step 2. */
+  .numeral {
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 900;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: -0.015em;
+    line-height: 0.8;
+    white-space: nowrap;
+  }
+
+  /* Fits a figure to the width of its container: set --fit to
+     (container width / text width) for the string you are showing. */
+  .fit {
+    container-type: inline-size;
+  }
+  .fit > .numeral {
+    font-size: min(calc(var(--fit, 30) * 1cqi), var(--fit-max, 9999px));
+    display: block;
+  }
+
+  /* The last figure grows as the story ends. --g runs 0 to 1 (set from
+     scroll). --grow, the largest size that still clears the title and the
+     caption, is measured on the stage by the script. */
+  .grow {
+    scale: calc(1 + (var(--grow, 1.5) - 1) * var(--g, 0));
+    transform-origin: 0 50%;
+  }
+
+  /* Faint survey grid. Applied to the opening screen only, never
+     behind running text. */
+  .graticule {
+    background-image:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size: 4rem 4rem;
+    background-position: -1px -1px;
+  }
+
+  /* Long-read setting for the case studies (step 3). Serif, generous
+     leading, a measure under 70 characters, print-style paragraph
+     indents instead of web-style gaps. */
+  .longread {
+    font-family: var(--font-text);
+    font-size: clamp(1.125rem, 1.04rem + 0.38vw, 1.3125rem);
+    line-height: 1.62;
+    max-inline-size: 56ch;
+    font-optical-sizing: auto;
+    font-variant-numeric: oldstyle-nums proportional-nums;
+    hanging-punctuation: first last;
+    hyphens: auto;
+    text-wrap: pretty;
+  }
+  .longread p + p {
+    text-indent: 1.5em;
+  }
+
+  /* The speed ceiling slider: a hairline track and a square thumb. */
+  .slider {
+    appearance: none;
+    width: 100%;
+    height: 2rem;
+    background: transparent;
+    cursor: pointer;
+  }
+  .slider:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  .slider::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--ink);
+  }
+  .slider::-moz-range-track {
+    height: 2px;
+    background: var(--ink);
+  }
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 1rem;
+    height: 1.625rem;
+    margin-top: calc(-0.8125rem + 1px);
+    background: var(--verde);
+    border: 2px solid var(--ink);
+    border-radius: 0;
+  }
+  .slider::-moz-range-thumb {
+    width: 1rem;
+    height: 1.625rem;
+    background: var(--verde);
+    border: 2px solid var(--ink);
+    border-radius: 0;
+  }
+
+  /* Links: a thick green underline that fills on hover. */
+  .link {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.14em;
+    text-decoration-color: var(--verde);
+    text-underline-offset: 0.2em;
+    transition: background-color 120ms linear;
+  }
+  .link:hover {
+    background-color: color-mix(in oklab, var(--verde) 22%, transparent);
+  }
+}
+
+/* Page transition panel: covers the screen, then lifts away. */
+@keyframes curtain-lift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-101%);
+  }
+}
+.curtain {
+  animation: curtain-lift 0.6s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+/* The animated hero has a still version for visitors who ask for less motion. */
+.hero-static {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* The route is shown complete instead of drawing itself. */
+  .route-lit {
+    transform: none !important;
+  }
+  .route-node {
+    background: var(--verde);
+    border-color: var(--verde);
+  }
+  .hero-scroll {
+    display: none;
+  }
+  .hero-static {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
