@@ -4,16 +4,18 @@ import type { Problem } from "@/content/work";
 // screen reader announces every problem with its fix. The column labels
 // are for sighted readers on wide screens only.
 export function Problems({
+  id,
   title,
   items,
 }: {
+  id: string;
   title: string;
   items: readonly Problem[];
 }) {
   return (
-    <section aria-labelledby="e5-problems" className="border-t-2 border-rule pt-5">
+    <section aria-labelledby={id} className="border-t-2 border-rule pt-5">
       <h4
-        id="e5-problems"
+        id={id}
         className="max-w-[28ch] font-display text-2xl font-bold leading-tight md:text-3xl"
       >
         {title}

@@ -23,7 +23,7 @@ export function E5Entry() {
       <div className="mt-14 grid gap-14">
         <Incident {...e5.featured} />
         <TrackDemo />
-        <Problems title={e5.problemsTitle} items={e5.problems} />
+        <Problems id="e5-problems" title={e5.problemsTitle} items={e5.problems} />
       </div>
     </Stop>
   );
