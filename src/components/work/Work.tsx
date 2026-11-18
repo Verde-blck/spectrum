@@ -1,6 +1,7 @@
 import { stops } from "@/content/work";
 import { AlsoBuilt } from "./AlsoBuilt";
 import { E5Entry } from "./E5Entry";
+import { LedgerEntry } from "./LedgerEntry";
 import { Route } from "./Route";
 import { Stop } from "./Stop";
 
@@ -16,7 +17,8 @@ export function Work() {
       </h2>
       <p className="longread mt-6 md:mt-8">
         Newest first. The first stop has a full write-up and the others are
-        shorter. Projects I built are listed after the route.
+        shorter. Projects I built come after the route, starting with Ìwé Ọjà,
+        which also has a full write-up.
       </p>
 
       <div className="mt-16 md:mt-24">
@@ -43,6 +45,7 @@ export function Work() {
         </Route>
       </div>
 
+      <LedgerEntry />
       <AlsoBuilt />
     </section>
   );

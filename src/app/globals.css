@@ -224,6 +224,43 @@ body {
     border-radius: 0;
   }
 
+  /* Pictures that lift off the page, like a print raised from a table: they
+     shift up and left and leave a hard green shadow. With a mouse or
+     trackpad they lift while the pointer is over them. On a touch screen
+     they lift as they pass the middle of the screen, and settle again as
+     they leave. Nothing moves for visitors who ask for less motion. */
+  .lift {
+    --lift: 0.5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @media (hover: hover) {
+      .lift {
+        transition:
+          translate 180ms ease-out,
+          box-shadow 180ms ease-out;
+      }
+      .lift:hover {
+        translate: calc(var(--lift) * -1) calc(var(--lift) * -1);
+        box-shadow: var(--lift) var(--lift) 0 0 var(--verde);
+      }
+      .lift-zoom img {
+        transition: scale 400ms ease-out;
+      }
+      .lift-zoom:hover img {
+        scale: 1.04;
+      }
+    }
+    @media (hover: none) {
+      @supports (animation-timeline: view()) {
+        .lift {
+          animation: lift linear both;
+          animation-timeline: view();
+          animation-range: cover;
+        }
+      }
+    }
+  }
+
   /* Links: a thick green underline that fills on hover. */
   .link {
     color: inherit;
@@ -235,6 +272,20 @@ body {
   }
   .link:hover {
     background-color: color-mix(in oklab, var(--verde) 22%, transparent);
+  }
+}
+
+/* The rise and settle for .lift on touch screens, driven by scroll. */
+@keyframes lift {
+  0%,
+  100% {
+    translate: 0 0;
+    box-shadow: 0 0 0 0 var(--verde);
+  }
+  40%,
+  60% {
+    translate: calc(var(--lift) * -1) calc(var(--lift) * -1);
+    box-shadow: var(--lift) var(--lift) 0 0 var(--verde);
   }
 }
 

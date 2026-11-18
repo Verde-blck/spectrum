@@ -51,7 +51,7 @@ export function About() {
                   <Fragment key={photo.alt}>
                     <li
                       style={{ flexGrow: shape, flexBasis: 0, aspectRatio: shape }}
-                      className="relative isolate mb-2.5 min-w-0 overflow-hidden border border-rule bg-leaf-900"
+                      className="lift lift-zoom relative isolate mb-2.5 min-w-0 overflow-hidden border border-rule bg-leaf-900"
                     >
                       <Image
                         src={photo.image}

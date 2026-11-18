@@ -9,9 +9,10 @@ import { site } from "@/lib/site";
 import "./globals.css";
 
 // Archivo carries the width axis, so one file gives us both the
-// condensed black numerals and the regular-width interface text.
+// condensed black numerals and the regular-width interface text. The
+// Vietnamese subset is loaded for the dotted Yoruba letters in Ìwé Ọjà.
 const archivo = Archivo({
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
   axes: ["wdth"],
   variable: "--font-archivo",
   display: "swap",
@@ -22,12 +23,12 @@ const archivo = Archivo({
 // file. The italic is a separate file that is not preloaded, because it is only
 // used in a few short passages.
 const newsreader = Newsreader({
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
   variable: "--font-newsreader",
   display: "swap",
 });
 const newsreaderItalic = Newsreader({
-  subsets: ["latin"],
+  subsets: ["latin", "vietnamese"],
   style: "italic",
   variable: "--font-newsreader-italic",
   display: "swap",

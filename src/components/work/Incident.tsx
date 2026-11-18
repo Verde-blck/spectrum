@@ -1,8 +1,9 @@
 import { Fragment } from "react";
 import type { IncidentData } from "@/content/work";
 
-// One incident report: what happened, why, the fix, and what I would do
-// differently. The last part is set in italic because it looks forward.
+// One incident report: what happened, why, and how it was fixed. A part marked
+// reflective is a look forward rather than something done, so it is set in
+// italic.
 export function Incident({ title, parts }: IncidentData) {
   return (
     <article className="border-t-2 border-rule pt-5">
