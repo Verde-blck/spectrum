@@ -1,8 +1,10 @@
 import { stops } from "@/content/work";
 import { AlsoBuilt } from "./AlsoBuilt";
 import { E5Entry } from "./E5Entry";
+import { IrantiEntry } from "./IrantiEntry";
 import { LedgerEntry } from "./LedgerEntry";
 import { Route } from "./Route";
+import { SabiEntry } from "./SabiEntry";
 import { Stop } from "./Stop";
 
 export function Work() {
@@ -18,7 +20,7 @@ export function Work() {
       <p className="longread mt-6 md:mt-8">
         Newest first. The first stop has a full write-up and the others are
         shorter. Projects I built come after the route, starting with Ìwé Ọjà,
-        which also has a full write-up.
+        iRANTI and Sabi Scan, which also have full write-ups.
       </p>
 
       <div className="mt-16 md:mt-24">
@@ -46,6 +48,8 @@ export function Work() {
       </div>
 
       <LedgerEntry />
+      <IrantiEntry />
+      <SabiEntry />
       <AlsoBuilt />
     </section>
   );

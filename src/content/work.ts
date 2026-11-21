@@ -7,6 +7,10 @@ import ledgerCalendar from "./ledger/calendar.png";
 import ledgerCustomer from "./ledger/customer.png";
 import ledgerAdmin from "./ledger/admin.png";
 import ledgerHome from "./ledger/home.png";
+import irantiIcons from "./iranti/icons.png";
+import sabiCamera from "./sabi/camera.png";
+import sabiRegistered from "./sabi/registered.png";
+import sabiCantConfirm from "./sabi/cant-confirm.png";
 
 export type Part = { label: string; text: string; reflective?: boolean };
 export type IncidentData = { title: string; parts: Part[] };
@@ -106,7 +110,7 @@ export const stops = [
   {
     id: "beceko",
     date: { iso: "2024", text: "2024" },
-    title: "BECEKO Fabrics & Style",
+    title: "BECEKO Fabrics & Styles",
     role: "Frontend developer",
     text: "I built reusable product architecture and responsive layouts.",
   },
@@ -133,7 +137,7 @@ export type Screen = { image: StaticImageData; alt: string; caption: string };
 // and amounts, never real records.
 export const ledger = {
   title: "Ìwé Ọjà",
-  role: "Ledger app for small businesses, which began as Beceko Ledger for BECEKO Fabrics & Style",
+  role: "Ledger app for small businesses, which began as Beceko Ledger for BECEKO Fabrics & Styles",
   date: { iso: "2026-11", text: "November 2026" },
   stack: "Node.js, Express 5, SQLite, Gemini API, Web Speech API, PDFKit, S3 API (Backblaze B2), JavaScript, Railway",
   intro: [
@@ -142,8 +146,8 @@ export const ledger = {
     "Each copy is one Node.js and Express service on Railway, with its ledger in SQLite on a persistent volume. The interface is plain JavaScript with no build step, made for a phone. Notes go to the Gemini API, which turns them into drafts the owner checks before anything is saved.",
   ],
   link: {
-    href: "https://github.com/Verde-blck/beceko-ledger",
-    label: "github.com/Verde-blck/beceko-ledger",
+    href: "https://github.com/Verde-blck/iwe-oja-ledger",
+    label: "github.com/Verde-blck/iwe-oja-ledger",
   },
   screens: [
     {
@@ -229,6 +233,162 @@ export const ledger = {
     {
       problem: "Renewing a business meant a redeploy",
       fix: "Paid-until dates moved from environment variables into each copy’s database. The dashboard changes them through a token for each business, derived from one secret with HMAC, so a renewal applies at once and a leaked token reaches only one business.",
+    },
+  ] satisfies Problem[],
+};
+
+// iRANTI is still being built, so nothing here claims a release, users or
+// device testing that hasn't happened yet. Update it after the Play test.
+export const iranti = {
+  title: "iRANTI",
+  role: "To-do app whose reminders wake the phone, for Android and iOS",
+  date: { iso: "2026-11", text: "November 2026" },
+  stack: "React Native, TypeScript, NativeWind, Kotlin, Swift, MMKV, react-native-iap (Google Play Billing), Android Keystore",
+  intro: [
+    "iRANTI, from ìrántí, the Yoruba word for a reminder, is a to-do app built so a reminder gets through when it matters. On Android, each reminder is an exact alarm that still fires while the phone is dozing. When it goes off, the app briefly wakes the phone and opens a full-screen alarm over the lock screen, where the task can be completed, snoozed or dismissed. On iPhone, reminders are scheduled notifications with their own alarm sound, set up for Apple’s critical alerts, which sound even in silent mode once Apple approves them.",
+    "Everything stays on the phone. Tasks are kept in encrypted storage, and there is no account or server. Screen-waking alarms are free for 22 days, then need a one-off Premium purchase through Google Play. The trial’s start date is signed with a key held in the phone’s secure hardware, and the Android alarm code checks the trial itself at the moment an alarm fires, so it works even when the app is closed.",
+    "The icon is a dùndún, the Yoruba talking drum, which carries messages; its hourglass shape also reads as time. iRANTI is being prepared for a closed test on Google Play. The iPhone version hasn’t been built yet, because that needs a Mac.",
+  ],
+  icons: {
+    image: irantiIcons,
+    caption: "The dùndún icon on Android and iPhone, with the alarm notification icon",
+    alt: "The iRANTI icon, a green talking drum with two sound waves on black, shown in Android’s round and rounded-square shapes, as a themed Android icon in muted green, as an iPhone icon, and as a small white notification icon.",
+  } satisfies Screen,
+  featured: {
+    title: "The first build would have been turned away by Google Play",
+    parts: [
+      {
+        label: "What happened",
+        text: "Before uploading, I checked Google Play’s current rules and found the app failed two of them. Since 31 August 2026, new apps must target Android 16 and use version 8 or newer of Google’s billing library. iRANTI targeted Android 15, and its purchases library used version 7.",
+      },
+      {
+        label: "Cause",
+        text: "The app is built on React Native 0.79, which targets Android 15 out of the box, and the purchases library version that suited it was still on the older billing library.",
+      },
+      {
+        label: "Fix",
+        text: "I moved the app to target Android 16 and upgraded to react-native-iap 17, which uses billing version 9.1. That library needed newer Kotlin and Android Gradle Plugin versions than React Native 0.79 includes, so I checked what each new dependency required and raised both: Kotlin to 2.2.20 and the plugin to 8.9.3.",
+      },
+      {
+        label: "Knock-on effect",
+        text: "Android 16 also changes how the back gesture works, which would have let someone swipe the full-screen alarm away without dealing with the task. I opted the app out of the new behaviour, so the alarm still has to be completed, snoozed or dismissed.",
+      },
+    ],
+  } satisfies IncidentData,
+  problemsTitle: "Other problems and how they were fixed",
+  problems: [
+    {
+      problem: "Expo Go couldn’t run it",
+      fix: "Expo Go only includes Expo’s own native code, and iRANTI’s alarms, wake lock and licence checks are custom Kotlin and Swift. So I build it with Gradle and install the APK on the phone directly.",
+    },
+    {
+      problem: "A library update needed a newer build plugin than React Native 0.79 has",
+      fix: "react-native-safe-area-context 5.11 asked for Android Gradle Plugin 9. I checked each native library’s build file and pinned versions that work together, such as 5.5.2.",
+    },
+    {
+      problem: "Winding the phone’s clock back could have restarted the trial",
+      fix: "The app records the last time it was opened. If the clock is more than five minutes behind that, screen-waking alarms stay locked until the clock is put right.",
+    },
+    {
+      problem: "A reminder set during the trial could still wake the phone after it ended",
+      fix: "The trial’s end date is passed to the native alarm code with a hardware-backed signature, so each alarm checks it as it fires, even with the app closed.",
+    },
+    {
+      problem: "Clean builds failed after the purchases upgrade",
+      fix: "Gradle’s clean step reused C++ settings that still pointed at the old library’s native code. Deleting the build folders by hand does the same job without that step.",
+    },
+    {
+      problem: "Reinstalling the app on Android restarts the trial",
+      fix: "Android deletes the app’s hardware key when it is uninstalled, so a fresh install starts a new trial. Only a server check can close this gap, and the app has no server yet. Still open.",
+    },
+  ] satisfies Problem[],
+};
+
+// Sabi Scan is a working prototype on my own phone, so nothing here claims a
+// release, users or testing in a market. The figures come from the project's
+// own tests and NAFDAC's public lists. Update it after NAFDAC replies and the
+// first market test.
+export const sabi = {
+  title: "Sabi Scan",
+  role: "Android app that checks NAFDAC registration numbers, even with no signal",
+  date: { iso: "2026-10", text: "October 2026 to present" },
+  stack: "Flutter, Dart, Google ML Kit, SQLite, Python, FastAPI",
+  intro: [
+    "Sabi Scan, from sabi, the Pidgin word for knowing, helps shoppers in markets like Balogun and Ariaria check a product before they pay. You point the phone at the “NAFDAC Reg. No.” on the pack and press one button. The phone reads the number itself with Google’s ML Kit and checks it against 24,678 registration numbers from NAFDAC’s Greenbook and food products database, kept on the phone, so it works with no signal.",
+    "A registered number comes back green, with what NAFDAC’s record says the pack should show: the product name, strength, pack size and maker, for the shopper to compare with the pack in their hand. A number that isn’t in the lists comes back as “Can’t confirm this one”, never as fake, because the public lists are incomplete. Red is kept for numbers NAFDAC itself has flagged. Warnings carry a button to NAFDAC’s reporting form, and alcoholic drinks show NAFDAC’s ban on sachets and bottles under 200 ml.",
+    "The app is built in Flutter, with all the checking in a separate Dart package that is tested without a phone. A Python tool downloads both NAFDAC lists, repairs typing slips, leaves out broken entries and signs every record, so the phone can spot a damaged download. I tuned the number reader on the real lists: in tests that damage the print the way worn packs do, it finds the right number about 99.5% of the time. A FastAPI server that refreshes the lists every night is built but not yet online. Sabi Scan runs on my own phone and hasn’t been released, because NAFDAC’s permission to use its data comes first.",
+  ],
+  link: {
+    href: "https://github.com/Verde-blck/sabi-scan",
+    label: "github.com/Verde-blck/sabi-scan",
+  },
+  screens: [
+    {
+      image: sabiCamera,
+      caption: "Scanning",
+      alt: "The camera screen, with a juice carton held up so its NAFDAC registration number sits inside the white guide box, a torch button and a round scan button.",
+    },
+    {
+      image: sabiRegistered,
+      caption: "A registered product",
+      alt: "A green result for Indomie Instant Noodles Chicken Flavor, NAFDAC number 01-0877, checked without internet. It lists what the pack should say: the product name, instant noodle, the pack sizes, Dufil Prima Foods Ltd and made in Nigeria.",
+    },
+    {
+      image: sabiCantConfirm,
+      caption: "A number not in the lists",
+      alt: "An amber result for 02-4819 that says “Can’t confirm this one”, asks the shopper to check the number on the pack, explains that a missing product is not proof of a fake, and offers Report to NAFDAC and Scan another buttons.",
+    },
+  ] satisfies Screen[],
+  featured: {
+    title: "The first real scan called a genuine pack a different product",
+    parts: [
+      {
+        label: "What happened",
+        text: "I scanned a pack of Indomie at home. The number was registered to Indomie, but the app came back amber: “This number belongs to a different product”.",
+      },
+      {
+        label: "Cause",
+        text: "The registration number sits on the back of the pack, with the maker’s address and the nutrition panel. The brand name is on the front, so it wasn’t in the photo, and the app read “name not seen” as “wrong product”.",
+      },
+      {
+        label: "Fix",
+        text: "The product name no longer makes a result suspicious. The result shows what NAFDAC’s record says the pack should show and asks the shopper to compare, with a tick when the photo did show the name.",
+      },
+      {
+        label: "Knock-on effect",
+        text: "Leaving the last check to the shopper also catches the most common fake: a real number printed on a different product. The shopper sees straight away that the number belongs to something else.",
+      },
+    ],
+  } satisfies IncidentData,
+  problemsTitle: "Other problems and how they were fixed",
+  problems: [
+    {
+      problem: "Every scan failed in the release build",
+      fix: "Release builds shrink the code, and the shrinker removed parts of ML Kit that are only looked up while the app runs. The phone’s own log showed the crash inside the shrunk code, so release builds now skip shrinking.",
+    },
+    {
+      problem: "Worn print turns letters into numbers",
+      fix: "The camera reads the C in C4 as a G, a leading 0 as a D, the 1 in A11 as an l, and the L at the end of food numbers as a 1. The reader tries the look-alike versions and lets the list decide, and it is tested on all 24,678 real numbers.",
+    },
+    {
+      problem: "NAFDAC’s food list had numbers turned into dates",
+      fix: "About 700 numbers had been turned into dates such as “Aug-35” by a spreadsheet, and 962 rows were blank. The download tool repairs typing slips, such as the letter O typed for a zero, leaves out what can’t be used and lists it for review.",
+    },
+    {
+      problem: "Some genuine products aren’t in any public list",
+      fix: "Cosmetics, and food registered before 2022, aren’t published. A mentholated powder and a balm I tested weren’t there under any number or name, so the app says it can’t confirm them rather than calling them fake. Still open until NAFDAC shares fuller data.",
+    },
+    {
+      problem: "Signal in a busy market comes and goes",
+      fix: "The app checks online for at most four seconds, then answers from the list on the phone, and stops trying for a while after repeated failures. A network’s “data exhausted” page is never mistaken for an answer.",
+    },
+    {
+      problem: "A bad night on NAFDAC’s site could empty every phone’s list",
+      fix: "Phones replace their whole list with the server’s copy. The server refuses a nightly refresh that is too small or much smaller than the day before, and keeps the last good list.",
+    },
+    {
+      problem: "Small alcohol packs were registered before NAFDAC banned them",
+      fix: "59 drinks in the list were registered in sachets or bottles under 200 ml. Since the ban took effect on 1 January 2026, every alcoholic drink shows a notice about it and a button to report the seller.",
     },
   ] satisfies Problem[],
 };
