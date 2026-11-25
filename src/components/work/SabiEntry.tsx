@@ -60,14 +60,19 @@ export function SabiEntry() {
         ))}
       </ul>
 
-      <div className="mt-14 grid gap-14">
-        <Incident {...sabi.featured} />
-        <Problems
-          id="sabi-problems"
-          title={sabi.problemsTitle}
-          items={sabi.problems}
-        />
-      </div>
+      {/* The story and the smaller fixes appear once they are written. */}
+      {sabi.featured || sabi.problems?.length ? (
+        <div className="mt-14 grid gap-14">
+          {sabi.featured ? <Incident {...sabi.featured} /> : null}
+          {sabi.problems?.length ? (
+            <Problems
+              id="sabi-problems"
+              title={sabi.problemsTitle ?? "Problems and how they were fixed"}
+              items={sabi.problems}
+            />
+          ) : null}
+        </div>
+      ) : null}
     </article>
   );
 }
