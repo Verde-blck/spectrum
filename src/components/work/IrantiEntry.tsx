@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { iranti } from "@/content/work";
 import { Incident } from "./Incident";
 import { Problems } from "./Problems";
@@ -31,6 +32,18 @@ export function IrantiEntry() {
           <p key={paragraph}>{paragraph}</p>
         ))}
       </div>
+      <p className="mt-4 font-display font-bold [overflow-wrap:anywhere]">
+        <a href={iranti.link.href} className="link" rel="noreferrer">
+          {iranti.link.label}
+        </a>
+      </p>
+      <p className="mt-2 flex flex-wrap gap-x-6 gap-y-1 font-display text-sm font-bold">
+        {iranti.policies.map((item) => (
+          <Link key={item.href} href={item.href} className="link">
+            {item.label}
+          </Link>
+        ))}
+      </p>
 
       <figure className="mt-12 max-w-3xl">
         <div className="lift overflow-hidden border-2 border-rule">

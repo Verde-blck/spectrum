@@ -8,9 +8,9 @@ import ledgerCustomer from "./ledger/customer.png";
 import ledgerAdmin from "./ledger/admin.png";
 import ledgerHome from "./ledger/home.png";
 import irantiIcons from "./iranti/icons.png";
-import sabiCamera from "./sabi/camera.png";
-import sabiRegistered from "./sabi/registered.png";
-import sabiCantConfirm from "./sabi/cant-confirm.png";
+import irinAjoHome from "./irin-ajo/home.png";
+import irinAjoShare from "./irin-ajo/share.png";
+import irinAjoWalk from "./irin-ajo/walk.png";
 
 export type Part = { label: string; text: string; reflective?: boolean };
 export type IncidentData = { title: string; parts: Part[] };
@@ -110,7 +110,7 @@ export const stops = [
   {
     id: "beceko",
     date: { iso: "2024", text: "2024" },
-    title: "BECEKO Fabrics & Styles",
+    title: "BECEKO Fabrics & Style",
     role: "Frontend developer",
     text: "I built reusable product architecture and responsive layouts.",
   },
@@ -132,12 +132,105 @@ export const stops = [
 
 export type Screen = { image: StaticImageData; alt: string; caption: string };
 
+// Irin Ajo has run as an Android test build against a staging server, but it is
+// not on Google Play yet. Don't claim a release or users until it is. Richard
+// built the backend; keep saying so. The screenshots come from the app running
+// in a browser at phone size; swap in phone screenshots after the field test.
+export const irinAjo = {
+  title: "Irin Ajo",
+  role: "Walking app for Nigerian cities, for Android (in testing)",
+  date: { iso: "2026-11", text: "November 2026" },
+  stack: "React Native, Expo SDK 58, TypeScript, NativeWind, Zustand, SQLite, Mapbox, Kotlin (Android foreground service), EAS Build",
+  intro: [
+    "Irin Ajo, from ìrìn àjò, the Yoruba for a journey, is a walking app for Nigerian cities. It counts steps and distance, draws the route on a map, keeps a daily streak and speaks an update every 1,000 steps, in English or Nigerian Pidgin. It is built for the phones most people here carry: 2 GB Android handsets, patchy data and very hot afternoons.",
+    "A walk keeps counting with the screen locked, through an Android foreground service written in Kotlin, and everything is saved on the phone first and synced when there is a connection. Walk Safe lets up to three trusted contacts follow a walk live from a link sent by WhatsApp or SMS. Water reminders come sooner as the temperature rises, using live weather, and Explore shows walks nearby with a safety rating for the hour. A finished walk can be shared as a branded card, over the walker’s own photo or as a clear sticker, with the first and last 200 m left out so the route doesn’t point to their door.",
+    "The map uses Mapbox with a style I made for it, which shows the landmarks people in Lagos give directions by. Richard built the backend from a brief I wrote, and the app runs against his staging server. Irin Ajo runs as an Android test build and isn’t on Google Play yet: the food tips are with a registered dietitian for review, and the walk voice is waiting for two voice actors.",
+  ],
+  link: {
+    href: "https://github.com/Verde-blck/irin-ajo",
+    label: "github.com/Verde-blck/irin-ajo",
+  },
+  screens: [
+    {
+      image: irinAjoHome,
+      caption: "Home at 1 pm",
+      alt: "The home screen: a Start Walk button, a note that it’s the hottest part of the day and a walk after 4:00 pm will feel easier, a ring showing 4.8 of 8 km walked today, and a six-day streak.",
+    },
+    {
+      image: irinAjoWalk,
+      caption: "A walk in progress",
+      alt: "A walk 12 seconds in: 0.1 km and 164 steps, a card for the walker’s music, a water reminder due in 25 minutes, and Pause and Hold to End buttons over the map.",
+    },
+    {
+      image: irinAjoShare,
+      caption: "Sharing a walk",
+      alt: "The share sheet: backgrounds Sand, Photo and Clear, Story or Square, and a preview card for a 4.8 km morning walk in Yaba, with a note that the first and last 200 m are left out.",
+    },
+  ] satisfies Screen[],
+  featured: {
+    title: "A crash that only happened on the phone",
+    parts: [
+      {
+        label: "What happened",
+        text: "After I added Walk Safe, the Android app crashed as it opened, with “Repo used before init()”. Every test in the browser had passed.",
+      },
+      {
+        label: "Cause",
+        text: "As the app starts, Walk Safe read its saved contacts before the database had opened. On a phone, reading an unopened SQLite database throws. In the browser the same storage is localStorage, which needs no opening, so the early read quietly worked.",
+      },
+      {
+        label: "Fix",
+        text: "Walk Safe now waits until the store has opened, like the rest of the start-up code, and it won’t save anything before it has loaded, so an early call can’t overwrite the saved contacts with an empty list.",
+      },
+      {
+        label: "Making sure it stays fixed",
+        text: "The browser storage now refuses to be used before it’s opened, with the same error as the phone. I ran the old code against it and the browser failed exactly as the phone had, and every screen since has been tested against the stricter version.",
+      },
+    ],
+  } satisfies IncidentData,
+  problemsTitle: "Other problems and how they were fixed",
+  problems: [
+    {
+      problem: "Some phones close apps in the background",
+      fix: "Tecno, Infinix, itel, Xiaomi, Oppo, Realme and Samsung phones can stop a walk counting to save battery. Walks run in a foreground service, and onboarding shows people on those brands how to let Irin Ajo keep running.",
+    },
+    {
+      problem: "Expo Go stopped opening the app after an Expo update",
+      fix: "Expo Go only runs the newest SDK. I moved the app from SDK 57 to 58, which needed changes for React Native’s stricter types and a new tab bar API, and set up standalone test builds so a walk no longer needs a computer nearby.",
+    },
+    {
+      problem: "A guessed temperature could pass for a real one",
+      fix: "A weather reading counts for three hours. After that, a time-of-day table for southern or northern Nigeria takes over, and the app says “the afternoon heat” instead of a number.",
+    },
+    {
+      problem: "A phone with a slow clock ignored fresh weather",
+      fix: "It treated new readings as coming from the future. A reading’s time is now the server’s, but never later than the phone’s own clock.",
+    },
+    {
+      problem: "Shared routes could show where someone lives",
+      fix: "Shared images leave out the first and last 200 m by default and say so. The demo above shows the difference.",
+    },
+    {
+      problem: "Brighter colours could quietly make text unreadable",
+      fix: "A test checks every colour pairing in the design rules, 4.5:1 for text and 3:1 for icons, so a palette change can’t ship a screen that’s hard to read.",
+    },
+    {
+      problem: "The icon script would have brought back an old logo",
+      fix: "It still drew an earlier version of the mark. I rewrote it around the current design and compared its output with the existing icons pixel by pixel before using it.",
+    },
+    {
+      problem: "Every trusted contact sees every shared walk",
+      fix: "The server can’t yet share a walk with only some contacts. The app says so plainly, and I’ve asked for sessions that name who can follow. Still open.",
+    },
+  ] satisfies Problem[],
+};
+
 // Ìwé Ọjà, the one project with a full write-up. It began as Beceko Ledger
 // for my mum's business. The screenshots use made-up customers, businesses
 // and amounts, never real records.
 export const ledger = {
   title: "Ìwé Ọjà",
-  role: "Ledger app for small businesses, which began as Beceko Ledger for BECEKO Fabrics & Styles",
+  role: "Ledger app for small businesses, which began as Beceko Ledger for BECEKO Fabrics & Style",
   date: { iso: "2026-11", text: "November 2026" },
   stack: "Node.js, Express 5, SQLite, Gemini API, Web Speech API, PDFKit, S3 API (Backblaze B2), JavaScript, Railway",
   intro: [
@@ -146,8 +239,8 @@ export const ledger = {
     "Each copy is one Node.js and Express service on Railway, with its ledger in SQLite on a persistent volume. The interface is plain JavaScript with no build step, made for a phone. Notes go to the Gemini API, which turns them into drafts the owner checks before anything is saved.",
   ],
   link: {
-    href: "https://github.com/Verde-blck/iwe-oja-ledger",
-    label: "github.com/Verde-blck/iwe-oja-ledger",
+    href: "https://github.com/Verde-blck/beceko-ledger",
+    label: "github.com/Verde-blck/beceko-ledger",
   },
   screens: [
     {
@@ -237,17 +330,25 @@ export const ledger = {
   ] satisfies Problem[],
 };
 
-// iRANTI is still being built, so nothing here claims a release, users or
-// device testing that hasn't happened yet. Update it after the Play test.
+// iRANTI has been built and run on real phones, including sharing between two,
+// but it is not on Google Play yet. Don't claim a release or users until it is.
 export const iranti = {
   title: "iRANTI",
-  role: "To-do app whose reminders wake the phone, for Android and iOS",
+  role: "To-do app whose reminders wake the phone, for Android and iOS (in testing)",
   date: { iso: "2026-11", text: "November 2026" },
-  stack: "React Native, TypeScript, NativeWind, Kotlin, Swift, MMKV, react-native-iap (Google Play Billing), Android Keystore",
+  stack: "React Native, TypeScript, NativeWind, Kotlin, Swift, MMKV, Firebase (Authentication, Firestore), react-native-iap (Google Play Billing), Android Keystore",
   intro: [
-    "iRANTI, from ìrántí, the Yoruba word for a reminder, is a to-do app built so a reminder gets through when it matters. On Android, each reminder is an exact alarm that still fires while the phone is dozing. When it goes off, the app briefly wakes the phone and opens a full-screen alarm over the lock screen, where the task can be completed, snoozed or dismissed. On iPhone, reminders are scheduled notifications with their own alarm sound, set up for Apple’s critical alerts, which sound even in silent mode once Apple approves them.",
-    "Everything stays on the phone. Tasks are kept in encrypted storage, and there is no account or server. Screen-waking alarms are free for 22 days, then need a one-off Premium purchase through Google Play. The trial’s start date is signed with a key held in the phone’s secure hardware, and the Android alarm code checks the trial itself at the moment an alarm fires, so it works even when the app is closed.",
-    "The icon is a dùndún, the Yoruba talking drum, which carries messages; its hourglass shape also reads as time. iRANTI is being prepared for a closed test on Google Play. The iPhone version hasn’t been built yet, because that needs a Mac.",
+    "iRANTI, from ìrántí, the Yoruba word for a reminder, is a to-do app built so a reminder gets through when it matters. On Android, each reminder is an exact alarm that still fires while the phone is dozing. When it goes off, the app briefly wakes the phone and opens a full-screen alarm over the lock screen, where the task can be completed, snoozed or dismissed. Reminders can repeat daily, on weekdays, weekly or monthly, and the alarm code schedules the next one itself, so repeats keep going even if the app is never opened.",
+    "Tasks can be grouped into lists, broken into checklists and searched. Everything stays on the phone in encrypted storage unless its owner chooses to share it: signing in with Google lets people share a whole list or a single task through an invite code, and changes sync live between phones. Backups go to a file the user picks, such as Google Drive. Screen-waking alarms are free for 22 days, then need a one-off Premium purchase through Google Play; the trial’s start date is signed with a key held in the phone’s secure hardware.",
+    "The icon is a dùndún, the Yoruba talking drum, which carries messages; its hourglass shape also reads as time. iRANTI has been tested on real Android phones, including sharing between two, and is being prepared for a closed test on Google Play. The iPhone version hasn’t been built yet, because that needs a Mac.",
+  ],
+  link: {
+    href: "https://github.com/Verde-blck/iRANTI",
+    label: "github.com/Verde-blck/iRANTI",
+  },
+  policies: [
+    { href: "/iranti/privacy", label: "Privacy policy" },
+    { href: "/iranti/delete-account", label: "Delete your account" },
   ],
   icons: {
     image: irantiIcons,
@@ -299,96 +400,15 @@ export const iranti = {
     },
     {
       problem: "Reinstalling the app on Android restarts the trial",
-      fix: "Android deletes the app’s hardware key when it is uninstalled, so a fresh install starts a new trial. Only a server check can close this gap, and the app has no server yet. Still open.",
-    },
-  ] satisfies Problem[],
-};
-
-// Sabi Scan is a working prototype on my own phone, so nothing here claims a
-// release, users or testing in a market. The figures come from the project's
-// own tests and NAFDAC's public lists. Update it after NAFDAC replies and the
-// first market test.
-export const sabi = {
-  title: "Sabi Scan",
-  role: "Android app that checks NAFDAC registration numbers, even with no signal",
-  date: { iso: "2026-10", text: "October 2026 to present" },
-  stack: "Flutter, Dart, Google ML Kit, SQLite, Python, FastAPI",
-  intro: [
-    "Sabi Scan, from sabi, the Pidgin word for knowing, helps shoppers in markets like Balogun and Ariaria check a product before they pay. You point the phone at the “NAFDAC Reg. No.” on the pack and press one button. The phone reads the number itself with Google’s ML Kit and checks it against 24,678 registration numbers from NAFDAC’s Greenbook and food products database, kept on the phone, so it works with no signal.",
-    "A registered number comes back green, with what NAFDAC’s record says the pack should show: the product name, strength, pack size and maker, for the shopper to compare with the pack in their hand. A number that isn’t in the lists comes back as “Can’t confirm this one”, never as fake, because the public lists are incomplete. Red is kept for numbers NAFDAC itself has flagged. Warnings carry a button to NAFDAC’s reporting form, and alcoholic drinks show NAFDAC’s ban on sachets and bottles under 200 ml.",
-    "The app is built in Flutter, with all the checking in a separate Dart package that is tested without a phone. A Python tool downloads both NAFDAC lists, repairs typing slips, leaves out broken entries and signs every record, so the phone can spot a damaged download. I tuned the number reader on the real lists: in tests that damage the print the way worn packs do, it finds the right number about 99.5% of the time. A FastAPI server that refreshes the lists every night is built but not yet online. Sabi Scan runs on my own phone and hasn’t been released, because NAFDAC’s permission to use its data comes first.",
-  ],
-  link: {
-    href: "https://github.com/Verde-blck/sabi-scan",
-    label: "github.com/Verde-blck/sabi-scan",
-  },
-  screens: [
-    {
-      image: sabiCamera,
-      caption: "Scanning",
-      alt: "The camera screen, with a juice carton held up so its NAFDAC registration number sits inside the white guide box, a torch button and a round scan button.",
+      fix: "Android deletes the app’s hardware key when it is uninstalled, so a fresh install starts a new trial. Closing this would mean checking the trial against an account on a server, which the app doesn’t do yet. Still open.",
     },
     {
-      image: sabiRegistered,
-      caption: "A registered product",
-      alt: "A green result for Indomie Instant Noodles Chicken Flavor, NAFDAC number 01-0877, checked without internet. It lists what the pack should say: the product name, instant noodle, the pack sizes, Dufil Prima Foods Ltd and made in Nigeria.",
+      problem: "Anyone who learned a shared list’s ID could have read it",
+      fix: "Firestore security rules let only members read a shared list or task, and joining needs an invite code that belongs to that exact list. Before shipping, I tested the rules in Firebase’s emulator against 31 actions that should be allowed or blocked.",
     },
     {
-      image: sabiCantConfirm,
-      caption: "A number not in the lists",
-      alt: "An amber result for 02-4819 that says “Can’t confirm this one”, asks the shopper to check the number on the pack, explains that a missing product is not proof of a fake, and offers Report to NAFDAC and Scan another buttons.",
-    },
-  ] satisfies Screen[],
-  featured: {
-    title: "The first real scan called a genuine pack a different product",
-    parts: [
-      {
-        label: "What happened",
-        text: "I scanned a pack of Indomie at home. The number was registered to Indomie, but the app came back amber: “This number belongs to a different product”.",
-      },
-      {
-        label: "Cause",
-        text: "The registration number sits on the back of the pack, with the maker’s address and the nutrition panel. The brand name is on the front, so it wasn’t in the photo, and the app read “name not seen” as “wrong product”.",
-      },
-      {
-        label: "Fix",
-        text: "The product name no longer makes a result suspicious. The result shows what NAFDAC’s record says the pack should show and asks the shopper to compare, with a tick when the photo did show the name.",
-      },
-      {
-        label: "Knock-on effect",
-        text: "Leaving the last check to the shopper also catches the most common fake: a real number printed on a different product. The shopper sees straight away that the number belongs to something else.",
-      },
-    ],
-  } satisfies IncidentData,
-  problemsTitle: "Other problems and how they were fixed",
-  problems: [
-    {
-      problem: "Every scan failed in the release build",
-      fix: "Release builds shrink the code, and the shrinker removed parts of ML Kit that are only looked up while the app runs. The phone’s own log showed the crash inside the shrunk code, so release builds now skip shrinking.",
-    },
-    {
-      problem: "Worn print turns letters into numbers",
-      fix: "The camera reads the C in C4 as a G, a leading 0 as a D, the 1 in A11 as an l, and the L at the end of food numbers as a 1. The reader tries the look-alike versions and lets the list decide, and it is tested on all 24,678 real numbers.",
-    },
-    {
-      problem: "NAFDAC’s food list had numbers turned into dates",
-      fix: "About 700 numbers had been turned into dates such as “Aug-35” by a spreadsheet, and 962 rows were blank. The download tool repairs typing slips, such as the letter O typed for a zero, leaves out what can’t be used and lists it for review.",
-    },
-    {
-      problem: "Some genuine products aren’t in any public list",
-      fix: "Cosmetics, and food registered before 2022, aren’t published. A mentholated powder and a balm I tested weren’t there under any number or name, so the app says it can’t confirm them rather than calling them fake. Still open until NAFDAC shares fuller data.",
-    },
-    {
-      problem: "Signal in a busy market comes and goes",
-      fix: "The app checks online for at most four seconds, then answers from the list on the phone, and stops trying for a while after repeated failures. A network’s “data exhausted” page is never mistaken for an answer.",
-    },
-    {
-      problem: "A bad night on NAFDAC’s site could empty every phone’s list",
-      fix: "Phones replace their whole list with the server’s copy. The server refuses a nightly refresh that is too small or much smaller than the day before, and keeps the last good list.",
-    },
-    {
-      problem: "Small alcohol packs were registered before NAFDAC banned them",
-      fix: "59 drinks in the list were registered in sachets or bottles under 200 ml. Since the ban took effect on 1 January 2026, every alcoholic drink shows a notice about it and a button to report the seller.",
+      problem: "Clearing the wrong build folders broke the Android build",
+      fix: "Deleting the libraries’ build folders also removed code that React Native generates for them, so the app’s C++ setup could not find it. Running the code generation step on its own before building fixed it.",
     },
   ] satisfies Problem[],
 };
