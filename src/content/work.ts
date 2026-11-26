@@ -11,12 +11,6 @@ import irantiIcons from "./iranti/icons.png";
 import irinAjoHome from "./irin-ajo/home.png";
 import irinAjoShare from "./irin-ajo/share.png";
 import irinAjoWalk from "./irin-ajo/walk.png";
-import e5MobileDashboard from "./e5-mobile/dashboard.png";
-import e5MobileMap from "./e5-mobile/live-map.jpg";
-import e5MobileAlarm from "./e5-mobile/sos-alarm.png";
-import sabiCamera from "./sabi/camera.png";
-import sabiCantConfirm from "./sabi/cant-confirm.png";
-import sabiRegistered from "./sabi/registered.png";
 
 export type Part = { label: string; text: string; reflective?: boolean };
 export type IncidentData = { title: string; parts: Part[] };
@@ -29,7 +23,7 @@ export const e5 = {
   date: { iso: "2026-09", text: "September 2026 to present" },
   intro: [
     "The E5 dashboard is a React and TypeScript web app, hosted on Vercel, that lets a control room monitor and manage smart helmets in the field. It holds no data of its own: everything comes from a backend (not built by me) on Railway, live video and calls go through a separate media server over WebRTC, and photos and videos are stored on Cloudflare R2 behind temporary links. Supervisors can see every helmet’s status, location, battery, signal and gas readings; watch live video and call wearers; answer SOS alarms; replay routes; send voice messages; draw fences; and manage helmet settings, connectivity and admin accounts, each limited by their role.",
-    "I also built the companion app for tablets, in Expo, React Native and TypeScript. It is on Google Play, an iPad version is being tested, and it has its own write-up after the route.",
+    "I also built the companion Android app for handheld tablets, in Expo, React Native and TypeScript. It brings monitoring, the live map, track playback, alarms, fences, media records and admin permissions to handheld tablets.",
   ],
   // The problem the opening of this page is built around.
   featured: {
@@ -103,109 +97,6 @@ export const e5 = {
   ] satisfies Problem[],
 };
 
-// The E5 tablet app. The Android app is on Google Play. The iPad version is built
-// and being tested through TestFlight; it is not on the App Store, so don't say it
-// is until it is. The backend is Cypher's, not mine. The screenshots come from the
-// app running in a browser at tablet size on made-up data, never real helmets or
-// people. As with the dashboard, keep this in step with anything E5 has approved
-// before the site goes live. When the Android build with the two-step sign-in fix
-// is released, change the last part of the featured story from "next release" to
-// the release it went out in.
-export const e5Mobile = {
-  title: "E5 Smart Helmet for tablets",
-  role: "Mobile developer (contract), for Android tablets and iPad",
-  date: { iso: "2026-10", text: "October 2026 to present" },
-  stack:
-    "Expo SDK 58, React Native 0.88, TypeScript, NativeWind, Expo Router, TanStack Query, Zustand, WebRTC, Google Maps, Apple Maps, Firebase Cloud Messaging, EAS Build",
-  intro: [
-    "This is the control-room app for E5’s smart helmets, made for tablets. It does what the dashboard does, at a desk or in a site office: it shows every helmet’s status, battery, wearer and last position on a live map with fences; plays live video; calls a wearer or a whole group; sends voice messages; replays a route; and manages administrators and what each of them may do. Two-step sign-in is built in, and the backend, which I did not build, decides what each person is allowed to see.",
-    "An alarm must not be missed. A critical one, such as an SOS, a fall, a gas reading or a worker near live electrics, opens a large red pop-up with a siren that stays until someone acts on it, and several alarms queue one behind another. A warning gets a smaller banner. On Android, the app can also raise alerts on a locked tablet through push notifications. It is made for tablets, and an Android phone is shown a message instead.",
-    "The map is Google Maps on Android, Apple Maps on iPad and OpenStreetMap as a fallback, and video calls use WebRTC through a media server. The Android app is live on Google Play. An iPad version is being tested through TestFlight, and I am preparing it to be shared by direct link rather than in the public store, because it is for E5’s staff only. More than 400 automated checks cover the app, and it also runs on made-up data, so I can test and show it without real helmets.",
-  ],
-  link: {
-    href: "https://play.google.com/store/apps/details?id=com.e5energy.smarthelmet",
-    label: "E5 Smart Helmet on Google Play",
-  },
-  screens: [
-    {
-      image: e5MobileDashboard,
-      caption: "Dashboard",
-      alt: "The dashboard on a tablet: counts of 8 helmets, 3 online, 5 offline and 3 alarms in the last 24 hours, a list of helmets that need attention, and a menu of icons down the left.",
-    },
-    {
-      image: e5MobileMap,
-      caption: "Live map with fences",
-      alt: "The live map on a tablet: helmets as coloured dots on a street map of Lagos, two fences drawn as a circle and a square, filter buttons for All, Online, Degraded and Offline, and a note that two helmets have no position yet.",
-    },
-    {
-      image: e5MobileAlarm,
-      caption: "An SOS alarm",
-      alt: "An SOS alarm over the app: a large red box reading SOS pressed, with the wearer’s name and helmet, a line saying the wearer pressed the SOS button and is asking for a call, and the buttons View on map, Join call and Close.",
-    },
-  ] satisfies Screen[],
-  featured: {
-    title: "Two-step sign-in worked on the website and failed on the app",
-    parts: [
-      {
-        label: "What happened",
-        text: "On the first test on an iPhone, the two-step screen refused every code with “challenge_expired”. The website accepted the same account and the same codes.",
-      },
-      {
-        label: "Cause",
-        text: "When two-step sign-in is on, the backend’s login reply contains a value called challenge, and the code step has to send it back with the code. The app looked for fields called mfaToken and challengeToken, names I had guessed before there was a written contract, so it never sent the challenge and the server said none had arrived.",
-      },
-      {
-        label: "My first guesses",
-        text: "I lost time on two wrong ideas: that the challenge had timed out, and then that the server needed cookies. A test against the live server with a made-up user answered the same way whatever I sent, so it could not tell a missing field from anything else, and it misled me. Asking the backend developer for his written contract settled it.",
-      },
-      {
-        label: "Fix",
-        text: "The app now keeps the challenge from the login reply and sends it back with the code, exactly as the backend’s document says. Each error the backend can return has its own plain message, and only an expired challenge restarts the sign-in, which it does silently.",
-      },
-      {
-        label: "Making sure it stays fixed",
-        text: "The old tests had been written to match my guess, so they passed while the feature was broken. I rewrote them from the backend’s own document, and I tested the whole flow in a browser against a pretend server that follows its rules: wrong codes, a code used twice, an expired challenge and too many attempts.",
-      },
-      {
-        label: "Where it stands",
-        text: "The same mistake was in the Android build already on Google Play, so the corrected build is the next release.",
-        reflective: true,
-      },
-    ],
-  } satisfies IncidentData,
-  problemsTitle: "Other problems and how they were fixed",
-  problems: [
-    {
-      problem: "The Verify button was invisible on an iPhone",
-      fix: "The first iPhone build drew no background behind the button, which left white text on a white card. Changing its shadow did not help. Replacing the pressable with a plain touchable did, and the button keeps a border so it stays visible even if a fill ever fails to draw. I never pinned down exactly why.",
-    },
-    {
-      problem: "A number keypad has no Go key",
-      fix: "The code box now sends the code by itself on the sixth digit, which also suits autofill and paste, and a plain line says “Checking the code...” so the screen never looks frozen.",
-    },
-    {
-      problem: "A build with no server address kept running",
-      fix: "A tester found that a build with a missing or malformed server address carried on. A build now refuses to start without a valid address and says so. Nothing is sent, and no saved sign-in is attached to anything.",
-    },
-    {
-      problem: "A locked iPad cannot ring",
-      fix: "iPadOS pauses an app that is not on screen. The first iPad version says so plainly and asks the control desk to keep the iPad awake with the app open. Alerts through Apple’s push service need a backend change, so I wrote it up for the backend developer, and the app keeps it behind a switch that is off.",
-    },
-    {
-      problem: "Google Play warned that the app might crash on some devices",
-      fix: "The notice was about 16 KB memory pages. I read the native libraries’ headers: they were aligned correctly, and Play’s own page for the build said it supports 16 KB. The warning came from React Native being built with an older Android toolkit than Google now prefers. I left it alone, because overriding a version React Native pins risks a worse fault, and I noted what to do when React Native updates.",
-    },
-    {
-      problem: "The store page said no data was collected",
-      fix: "The Data safety section on Google Play said “No data collected”, but the app sends names, phone numbers, recorded audio and device codes to the backend. I listed exactly what it sends from the code and wrote the answers for E5 and the backend developer to confirm, and the label was corrected.",
-    },
-    {
-      problem: "Video calls need more than Expo Go",
-      fix: "Calls use a native WebRTC module that Expo Go does not include, so those screens only work in a real build. Everything else can be tried quickly in Expo Go.",
-    },
-  ] satisfies Problem[],
-};
-
 // Short entries. Every line is taken from the CV; nothing is added.
 export const stops = [
   {
@@ -259,6 +150,10 @@ export const irinAjo = {
     href: "https://github.com/Verde-blck/irin-ajo",
     label: "github.com/Verde-blck/irin-ajo",
   },
+  policies: [
+    { href: "/irin-ajo/privacy", label: "Privacy policy" },
+    { href: "/irin-ajo/delete-account", label: "Delete your account" },
+  ],
   screens: [
     {
       image: irinAjoHome,
@@ -520,61 +415,6 @@ export const iranti = {
       fix: "Deleting the libraries’ build folders also removed code that React Native generates for them, so the app’s C++ setup could not find it. Running the code generation step on its own before building fixed it.",
     },
   ] satisfies Problem[],
-};
-
-// What an app entry needs. The featured story and the list of smaller fixes
-// are optional, so an entry can be on the page before they are written.
-export type AppEntry = {
-  title: string;
-  role: string;
-  date: { iso: string; text: string };
-  stack: string;
-  intro: string[];
-  link: { href: string; label: string };
-  screens: Screen[];
-  featured?: IncidentData;
-  problemsTitle?: string;
-  problems?: Problem[];
-};
-
-// Sabi Scan is in development and is not released. Don't claim a release or
-// users until it is. This is written from the CV and the three screenshots
-// from my phone, so it has no featured story or list of smaller fixes yet. When
-// they are written, add featured, problemsTitle and problems below and the page
-// will show them. The date is when the screenshots were taken (20 November
-// 2026): change it if the work started earlier. NAFDAC's product list stays
-// private until NAFDAC agrees.
-export const sabi: AppEntry = {
-  title: "Sabi Scan",
-  role: "App that checks a pack’s NAFDAC number, for Android (in development)",
-  date: { iso: "2026-11", text: "November 2026" },
-  stack: "Flutter, Dart, Google ML Kit, SQLite, Python, FastAPI",
-  intro: [
-    "Sabi Scan is an Android app that reads the NAFDAC number printed on a pack, using the phone’s camera, and checks it against NAFDAC’s list of registered products. If the number is in the list, the app shows what the genuine pack should say, such as the product name, the pack sizes and the company, so the person can compare it with the pack in their hand. If it is not, the app says what number it read, asks the person to check it and take another photo, and offers a way to report the product to NAFDAC.",
-    "It is careful about what it claims. A number that is not in the list is described as one the app can’t confirm, not as fake, because some genuine products, especially older food, are missing from the list. The check happens on the phone, against 24,678 NAFDAC registrations, so it works without internet, and the app says which day’s list it used. A small FastAPI server provides nightly updates to the list.",
-    "The number reader uses Google ML Kit and was tuned on real NAFDAC data. In my tests with simulated worn print it finds the right number in about 99.5% of cases, and 200 automated tests cover the project. Sabi Scan is still in development. The code is on GitHub without NAFDAC’s product list, which stays private until NAFDAC agrees.",
-  ],
-  link: {
-    href: "https://github.com/Verde-blck/sabi-scan",
-    label: "github.com/Verde-blck/sabi-scan",
-  },
-  screens: [
-    {
-      image: sabiCamera,
-      caption: "Scanning a pack",
-      alt: "The camera screen: a food pack held in a hand with a white box drawn around its printed NAFDAC number, a note at the top reading Fit the NAFDAC number inside the box, and a torch button and a round search button at the bottom.",
-    },
-    {
-      image: sabiRegistered,
-      caption: "A number in the list",
-      alt: "A green screen headed In NAFDAC’s list, saying the number is real. A card tells the person to check that the pack in their hand says the same product name, pack type, pack sizes, company and that it was made in Nigeria, and to not buy it if anything is different. Below it are the NAFDAC number and a note that the check was made without internet using the list from 31 October 2026, with a Scan another button.",
-    },
-    {
-      image: sabiCantConfirm,
-      caption: "A number the app can’t confirm",
-      alt: "An orange screen headed Can’t confirm this one, saying the number isn’t in NAFDAC’s list on the phone. A card asks the person to check that the pack says the number the app read, and a note says some genuine products, especially older food, are missing from the list, so this does not prove it is fake. Buttons read Report to NAFDAC and Scan another.",
-    },
-  ] satisfies Screen[],
 };
 
 export const projects = [

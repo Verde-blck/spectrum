@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { irinAjo } from "@/content/work";
 import { Incident } from "./Incident";
 import { Problems } from "./Problems";
@@ -36,6 +37,13 @@ export function IrinAjoEntry() {
         <a href={irinAjo.link.href} className="link" rel="noreferrer">
           {irinAjo.link.label}
         </a>
+      </p>
+      <p className="mt-2 flex flex-wrap gap-x-6 gap-y-1 font-display text-sm font-bold">
+        {irinAjo.policies.map((item) => (
+          <Link key={item.href} href={item.href} className="link">
+            {item.label}
+          </Link>
+        ))}
       </p>
 
       {/* Three across, like Ìwé Ọjà's contact sheet. */}
