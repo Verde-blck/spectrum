@@ -1,10 +1,12 @@
 import { stops } from "@/content/work";
 import { AlsoBuilt } from "./AlsoBuilt";
 import { E5Entry } from "./E5Entry";
+import { E5MobileEntry } from "./E5MobileEntry";
 import { IrantiEntry } from "./IrantiEntry";
 import { IrinAjoEntry } from "./IrinAjoEntry";
 import { LedgerEntry } from "./LedgerEntry";
 import { Route } from "./Route";
+import { SabiEntry } from "./SabiEntry";
 import { Stop } from "./Stop";
 
 export function Work() {
@@ -19,8 +21,10 @@ export function Work() {
       </h2>
       <p className="longread mt-6 md:mt-8">
         Newest first. The first stop has a full write-up and the others are
-        shorter. Projects I built come after the route, starting with Irin Ajo,
-        Ìwé Ọjà and iRANTI, which also have full write-ups.
+        shorter. After the route comes the E5 tablet app, which has its own
+        write-up, and then projects I built, starting with Irin Ajo, Ìwé Ọjà
+        and iRANTI, which also have full write-ups, then Sabi Scan, which is
+        still in development.
       </p>
 
       <div className="mt-16 md:mt-24">
@@ -47,9 +51,11 @@ export function Work() {
         </Route>
       </div>
 
+      <E5MobileEntry />
       <IrinAjoEntry />
       <LedgerEntry />
       <IrantiEntry />
+      <SabiEntry />
       <AlsoBuilt />
     </section>
   );
